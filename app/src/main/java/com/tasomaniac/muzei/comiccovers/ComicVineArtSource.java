@@ -20,7 +20,7 @@ public class ComicVineArtSource extends RemoteMuzeiArtSource {
     private static final String SOURCE_NAME = "ComicVineArtSource";
     public static final String NUM_OF_TOTAL_RESULTS = "number_of_total_results";
 
-    private static final int ROTATE_TIME_MILLIS = 3 * 60 * 60 * 1000; // rotate every 3 hours
+    private static final int ROTATE_TIME_MILLIS = 24 * 60 * 60 * 1000; // rotate every 3 hours
 
     Random random;
 
