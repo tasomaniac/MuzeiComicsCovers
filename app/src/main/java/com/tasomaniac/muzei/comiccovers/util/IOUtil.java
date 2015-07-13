@@ -1,9 +1,10 @@
 package com.tasomaniac.muzei.comiccovers.util;
 
+import android.content.Context;
 import android.net.Uri;
 
-import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.OkUrlFactory;
+import com.tasomaniac.muzei.comiccovers.App;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -13,10 +14,10 @@ import java.net.URL;
 import timber.log.Timber;
 
 public class IOUtil {
-    private static final int DEFAULT_READ_TIMEOUT = 30 * 1000; // 30s
-    private static final int DEFAULT_CONNECT_TIMEOUT = 15 * 1000; // 15s
+    public static final int DEFAULT_READ_TIMEOUT = 30 * 1000; // 30s
+    public static final int DEFAULT_CONNECT_TIMEOUT = 15 * 1000; // 15s
 
-    public static boolean checkContentType(Uri uri, String reqContentTypeSubstring)
+    public static boolean checkContentType(Context context, Uri uri, String reqContentTypeSubstring)
             throws OpenUriException {
 
         if (uri == null) {
@@ -28,12 +29,12 @@ public class IOUtil {
             throw new OpenUriException(false, new IOException("Uri had no scheme"));
         }
 
-        OkHttpClient client = new OkHttpClient();
         HttpURLConnection conn;
         int responseCode = 0;
         String responseMessage = null;
         try {
-            conn = new OkUrlFactory(client).open(new URL(uri.toString()));
+            conn = new OkUrlFactory(App.get(context).getOkHttpClient())
+                    .open(new URL(uri.toString()));
         } catch (MalformedURLException e) {
             throw new OpenUriException(false, e);
         }

@@ -16,6 +16,7 @@ import retrofit.ErrorHandler;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
+import retrofit.client.OkClient;
 import timber.log.Timber;
 
 public class ComicVineArtSource extends RemoteMuzeiArtSource {
@@ -48,6 +49,7 @@ public class ComicVineArtSource extends RemoteMuzeiArtSource {
     protected void onTryUpdate(int reason) throws RetryException {
 
         RestAdapter restAdapter = new RestAdapter.Builder()
+                .setClient(new OkClient(App.get(getApplicationContext()).getOkHttpClient()))
                 .setEndpoint(Config.API_ENDPOINT)
                 .setRequestInterceptor(new RequestInterceptor() {
                     @Override
