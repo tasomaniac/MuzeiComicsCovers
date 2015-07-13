@@ -3,14 +3,15 @@
 buildscript {
     repositories {
         jcenter()
+        maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:1.3.0-beta4'
         classpath 'com.jakewharton.hugo:hugo-plugin:1.2.1'
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.11.3'
+        classpath 'com.github.triplet.gradle:play-publisher:1.1.0'
 
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
+        classpath 'io.fabric.tools:gradle:1.+'
     }
 }
 
@@ -19,5 +20,19 @@ apply plugin: 'com.github.ben-manes.versions'
 allprojects {
     repositories {
         jcenter()
+        maven { url 'https://maven.fabric.io/public' }
     }
+}
+
+ext {
+    isTravis = "true".equals(System.getenv("TRAVIS"))
+    preDexEnabled = "true".equals(System.getProperty("pre-dex", "true"))
+
+    versionMajor = 1
+    versionMinor = 0
+    versionPatch = 1
+    versionBuild = 0
+
+    compileSdkVersion = 22
+    buildToolsVersion = "22.0.1"
 }
