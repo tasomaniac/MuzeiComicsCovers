@@ -16,7 +16,7 @@
     <service
       android:name=".ComicVineArtSource"
       android:description="@string/source_description"
-      android:icon="@mipmap/ic_launcher"
+      android:icon="@drawable/ic_source_comiccovers"
       android:label="@string/source_name">
       <intent-filter>
         <action android:name="com.google.android.apps.muzei.api.MuzeiArtSource"/>
