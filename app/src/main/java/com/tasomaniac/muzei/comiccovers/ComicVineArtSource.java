@@ -8,6 +8,7 @@ import android.preference.PreferenceManager;
 import com.google.android.apps.muzei.api.Artwork;
 import com.google.android.apps.muzei.api.RemoteMuzeiArtSource;
 import com.tasomaniac.muzei.comiccovers.model.Comic;
+import com.tasomaniac.muzei.comiccovers.util.IOUtil;
 
 import java.util.Random;
 
@@ -15,12 +16,14 @@ import retrofit.ErrorHandler;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
+import timber.log.Timber;
 
 public class ComicVineArtSource extends RemoteMuzeiArtSource {
     private static final String SOURCE_NAME = "ComicVineArtSource";
     public static final String NUM_OF_TOTAL_RESULTS = "number_of_total_results";
 
-    private static final int ROTATE_TIME_MILLIS = 24 * 60 * 60 * 1000; // rotate every 3 hours
+    private static final int ROTATE_TIME_MILLIS = 24 * 60 * 60 * 1000; // rotate every 24 hours
+    private static final int NEXT_ON_ERROR_TIME_MILLIS = 60 * 60 * 1000; // rotate every 24 hours
 
     Random random;
 
@@ -60,13 +63,14 @@ public class ComicVineArtSource extends RemoteMuzeiArtSource {
                                 || (500 <= statusCode && statusCode < 600)) {
                             return new RetryException();
                         }
-                        scheduleUpdate(System.currentTimeMillis() + ROTATE_TIME_MILLIS);
+                        scheduleUpdate(System.currentTimeMillis() + NEXT_ON_ERROR_TIME_MILLIS);
+
+                        Timber.d(retrofitError, "Error getting the image %s", retrofitError.getUrl());
+
                         return retrofitError;
                     }
                 })
                 .build();
-
-
 
         final ComicVineService service = restAdapter.create(ComicVineService.class);
         Comic comic = getNextComic(service);
@@ -76,8 +80,10 @@ public class ComicVineArtSource extends RemoteMuzeiArtSource {
                 name.append(comic.getVolume().getName());
             }
             if (comic.getName() != null) {
-                name.append(" | ")
-                        .append(comic.getName());
+                if (name.length() > 0) {
+                    name.append(" | ");
+                }
+                name.append(comic.getName());
             }
 
             publishArtwork(new Artwork.Builder()
@@ -96,10 +102,12 @@ public class ComicVineArtSource extends RemoteMuzeiArtSource {
     private Comic getNextComic(final ComicVineService service) throws RetryException {
         String currentToken = (getCurrentArtwork() != null) ? getCurrentArtwork().getToken() : null;
 
+        String offset = String.valueOf(random.nextInt(max_size));
         ComicVineService.ComicVineResponse response =
-                service.getIssues(String.valueOf(random.nextInt(max_size)));
+                service.getIssues(offset);
 
         if (response == null || response.getResults() == null) {
+            Timber.d("Error getting the image %s", offset);
             throw new RetryException();
         }
 
@@ -107,15 +115,23 @@ public class ComicVineArtSource extends RemoteMuzeiArtSource {
         prefs.edit().putInt(NUM_OF_TOTAL_RESULTS, max_size).apply();
 
         if (response.getResults().size() < 1) {
-            scheduleUpdate(System.currentTimeMillis() + ROTATE_TIME_MILLIS);
+            scheduleUpdate(System.currentTimeMillis() + NEXT_ON_ERROR_TIME_MILLIS);
             return null;
         }
         Comic comic = response.getResults().get(0);
         String newToken = String.valueOf(comic.getId());
-        if (currentToken == null || !currentToken.equals(newToken)) {
-            return comic;
-        } else {
-            return getNextComic(service);
+        try {
+            boolean isContentValid = IOUtil.checkContentType(getApplicationContext(),
+                    Uri.parse(comic.getImage().getSuperUrl()), "image/");
+            if ((currentToken == null || !currentToken.equals(newToken)) && isContentValid) {
+                return comic;
+            } else {
+                return getNextComic(service);
+            }
+        } catch (IOUtil.OpenUriException e) {
+            Timber.e(e, "Error on the image. Will try in an hour.");
+            scheduleUpdate(System.currentTimeMillis() + NEXT_ON_ERROR_TIME_MILLIS);
+            return null;
         }
     }
 }
