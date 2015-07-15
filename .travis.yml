@@ -8,7 +8,7 @@ android:
 jdk:
   - oraclejdk7
 
-script: "./gradlew build"
+script: "./gradlew assembleDebug"
 
 env:
   global:
