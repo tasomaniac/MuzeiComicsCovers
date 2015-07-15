@@ -1,0 +1,19 @@
+language: android
+
+android:
+  components:
+    - build-tools-22.0.1
+    - android-22
+
+jdk:
+  - oraclejdk7
+
+branches:
+  except:
+    - gh-pages
+
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.gradle
