@@ -54,7 +54,7 @@ public class ComicVineArtSource extends RemoteMuzeiArtSource {
                 .setRequestInterceptor(new RequestInterceptor() {
                     @Override
                     public void intercept(RequestFacade request) {
-                        request.addQueryParam("api_key", Config.CONSUMER_KEY);
+                        request.addQueryParam("api_key", BuildConfig.COMIC_VINE_CONSUMER_KEY);
                     }
                 })
                 .setErrorHandler(new ErrorHandler() {

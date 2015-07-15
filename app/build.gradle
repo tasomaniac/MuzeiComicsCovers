@@ -25,6 +25,8 @@ android {
         buildConfigField "String", "GIT_SHA", "\"${gitSha}\""
         buildConfigField "String", "BUILD_TIME", "\"${buildTime}\""
 
+        buildConfigField "String", "COMIC_VINE_CONSUMER_KEY", "\"" + (local_properties.comicvine_consumer_key ?: System.getenv("comicvine_consumer_key")) + "\""
+
         resConfigs "en"
     }
 
