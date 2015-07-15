@@ -8,6 +8,8 @@ android:
 jdk:
   - oraclejdk7
 
+script: "./gradlew build"
+
 env:
   global:
     secure: "PVbL8+paUZtJKEgWqq+Z73WZ00TKGJv26R1GDauhdoA8tMawYYy499JNFo6VUd0TSbYbPEvejJmS8d6V2fu5cnROrvweiiAsDoHOXXFIHPbQEzqE1cJqcIilsdR4YFP3SQ7Hv6SI/HVDxWkRAxgjvFjUSIGcnJqCAw/VffNlVhs="
