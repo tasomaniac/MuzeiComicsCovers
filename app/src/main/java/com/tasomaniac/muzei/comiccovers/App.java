@@ -6,18 +6,16 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.squareup.okhttp.OkHttpClient;
-import com.tasomaniac.muzei.comiccovers.util.IOUtil;
 
 import java.util.concurrent.TimeUnit;
 
 import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
-/**
- * Created by tasomaniac on 13/7/15.
- */
 public class App extends Application {
 
+    public static final int DEFAULT_READ_TIMEOUT = 30 * 1000; // 30s
+    public static final int DEFAULT_CONNECT_TIMEOUT = 15 * 1000; // 15s
     private OkHttpClient okHttpClient;
 
     @Override
@@ -25,8 +23,8 @@ public class App extends Application {
         super.onCreate();
 
         okHttpClient = new OkHttpClient();
-        okHttpClient.setConnectTimeout(IOUtil.DEFAULT_CONNECT_TIMEOUT, TimeUnit.MILLISECONDS);
-        okHttpClient.setReadTimeout(IOUtil.DEFAULT_READ_TIMEOUT, TimeUnit.MILLISECONDS);
+        okHttpClient.setConnectTimeout(DEFAULT_CONNECT_TIMEOUT, TimeUnit.MILLISECONDS);
+        okHttpClient.setReadTimeout(DEFAULT_READ_TIMEOUT, TimeUnit.MILLISECONDS);
 
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());

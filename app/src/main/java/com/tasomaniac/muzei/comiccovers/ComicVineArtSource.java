@@ -10,6 +10,7 @@ import com.google.android.apps.muzei.api.RemoteMuzeiArtSource;
 import com.tasomaniac.muzei.comiccovers.model.Comic;
 import com.tasomaniac.muzei.comiccovers.util.IOUtil;
 
+import java.io.IOException;
 import java.util.Random;
 
 import retrofit.ErrorHandler;
@@ -124,13 +125,13 @@ public class ComicVineArtSource extends RemoteMuzeiArtSource {
         String newToken = String.valueOf(comic.getId());
         try {
             boolean isContentValid = IOUtil.checkContentType(getApplicationContext(),
-                    Uri.parse(comic.getImage().getSuperUrl()), "image/");
+                    comic.getImage().getSuperUrl());
             if ((currentToken == null || !currentToken.equals(newToken)) && isContentValid) {
                 return comic;
             } else {
                 return getNextComic(service);
             }
-        } catch (IOUtil.OpenUriException e) {
+        } catch (IOException e) {
             Timber.e(e, "Error on the image. Will try in an hour.");
             scheduleUpdate(System.currentTimeMillis() + NEXT_ON_ERROR_TIME_MILLIS);
             return null;
