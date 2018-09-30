@@ -3,14 +3,13 @@ package com.tasomaniac.muzei.comiccovers;
 import android.app.Application;
 import android.content.Context;
 import android.util.Log;
-
 import com.crashlytics.android.Crashlytics;
-import com.squareup.okhttp.OkHttpClient;
+import io.fabric.sdk.android.Fabric;
+import okhttp3.OkHttpClient;
+import org.jetbrains.annotations.NotNull;
+import timber.log.Timber;
 
 import java.util.concurrent.TimeUnit;
-
-import io.fabric.sdk.android.Fabric;
-import timber.log.Timber;
 
 public class App extends Application {
 
@@ -22,9 +21,10 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
 
-        okHttpClient = new OkHttpClient();
-        okHttpClient.setConnectTimeout(DEFAULT_CONNECT_TIMEOUT, TimeUnit.MILLISECONDS);
-        okHttpClient.setReadTimeout(DEFAULT_READ_TIMEOUT, TimeUnit.MILLISECONDS);
+        okHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(DEFAULT_CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
+                .readTimeout(DEFAULT_READ_TIMEOUT, TimeUnit.MILLISECONDS)
+                .build();
 
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
@@ -43,9 +43,11 @@ public class App extends Application {
     }
 
 
-    /** A tree which logs important information for crash reporting. */
+    /**
+     * A tree which logs important information for crash reporting.
+     */
     private static class CrashReportingTree extends Timber.Tree {
-        @Override protected void log(int priority, String tag, String message, Throwable t) {
+        @Override protected void log(int priority, String tag, @NotNull String message, Throwable t) {
             if (priority == Log.VERBOSE || priority == Log.DEBUG) {
                 return;
             }

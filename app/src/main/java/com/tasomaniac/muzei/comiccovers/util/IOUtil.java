@@ -1,14 +1,12 @@
 package com.tasomaniac.muzei.comiccovers.util;
 
 import android.content.Context;
-
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 import com.tasomaniac.muzei.comiccovers.App;
+import okhttp3.Request;
+import okhttp3.Response;
+import timber.log.Timber;
 
 import java.io.IOException;
-
-import timber.log.Timber;
 
 public class IOUtil {
 

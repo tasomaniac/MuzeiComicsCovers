@@ -1,38 +1,44 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.github.triplet.play'
 apply plugin: 'io.fabric'
+apply plugin: 'com.novoda.android-command'
+apply plugin: 'com.novoda.build-properties'
+apply plugin: 'com.novoda.static-analysis'
 
-Properties local_properties = new Properties()
-File localPropertiesFile = project.rootProject.file('local.properties')
-if (localPropertiesFile.exists()) {
-    local_properties.load(localPropertiesFile.newDataInputStream())
+buildProperties {
+    signing.using(file('props/release.signing')) | file('props/debug.signing')
+    secrets.using(file('props/secrets.properties')) | System.getenv()
 }
 
+def secrets = buildProperties.secrets
 def gitSha = 'git rev-parse --short HEAD'.execute([], project.rootDir).text.trim()
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        applicationId "com.tasomaniac.muzei.comiccovers"
-        minSdkVersion 17
+        applicationId 'com.tasomaniac.muzei.comiccovers'
+        minSdkVersion 19
         targetSdkVersion rootProject.ext.compileSdkVersion
         versionCode rootProject.ext.versionMajor * 10000 + rootProject.ext.versionMinor * 1000 + rootProject.ext.versionPatch * 100 + rootProject.ext.versionBuild
         versionName "${rootProject.ext.versionMajor}.${rootProject.ext.versionMinor}" + ((rootProject.ext.versionPatch != 0) ? ".${rootProject.ext.versionPatch}" : "")
-        buildConfigField "String", "GIT_SHA", "\"${gitSha}\""
+        buildConfigString "GIT_SHA", gitSha
 
-        buildConfigField "String", "COMIC_VINE_CONSUMER_KEY", "\"" + (local_properties.comicvine_consumer_key ?: System.getenv("comicvine_consumer_key")) + "\""
+        buildConfigString "COMIC_VINE_CONSUMER_KEY", secrets['comicvine_consumer_key']
+        buildConfigString "COMIC_VINE_AUTHORITY", applicationId
+        manifestPlaceholders = [comicVineAuthority: applicationId]
 
         resConfigs "en"
     }
 
     signingConfigs {
-        debug.storeFile file("../distribution/debug.keystore")
+        debug.storeFile file('props/debug.keystore')
         release {
-            storeFile file("../distribution/" + (local_properties.release_keystore_name ?: "debug.keystore"))
-            keyAlias(local_properties.release_keystore_alias ?: "androiddebugkey")
-            storePassword(local_properties.release_keystore_pwd ?: "android")
-            keyPassword(local_properties.release_keystore_pwd2 ?: "android")
+            def signing = buildProperties.signing
+            storeFile file("props/${signing['storeFile'].string}")
+            storePassword signing['storePassword'].string
+            keyAlias signing['keyAlias'].string
+            keyPassword signing['keyPassword'].string
         }
     }
 
@@ -65,21 +71,30 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    // Workaround for WorkManager alpha09: https://developer.android.com/jetpack/docs/release-notes#september_19_2018
+    packagingOptions {
+        exclude 'META-INF/proguard/androidx-annotations.pro'
+    }
 }
 
 play {
-    serviceAccountEmail = local_properties.play_service_account ?: ''
-    pk12File = file("../distribution/" + (local_properties.play_key_file ?: 'no-file.p12'))
+    serviceAccountEmail = secrets['play_service_account'].or('').string
+    pk12File = file(secrets['play_key_file'].or('no_file.p12').string)
     track = 'alpha'
 }
 
 dependencies {
-    implementation 'com.squareup.okhttp:okhttp:2.5.0'
-    implementation 'com.squareup.retrofit:retrofit:1.9.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.11.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+    implementation 'com.google.code.gson:gson:2.8.5'
+
+    implementation 'android.arch.work:work-runtime:1.0.0-alpha09'
 
     implementation 'com.jakewharton.timber:timber:4.7.1'
 
-    implementation 'com.google.android.apps.muzei:muzei-api:2.0'
+    implementation 'com.google.android.apps.muzei:muzei-api:3.0.0-beta01'
 
     implementation 'com.crashlytics.sdk.android:crashlytics:2.9.5'
 
