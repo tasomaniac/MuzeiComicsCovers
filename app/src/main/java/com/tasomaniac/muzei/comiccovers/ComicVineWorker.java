@@ -98,9 +98,21 @@ public class ComicVineWorker extends Worker {
             name.append(comic.getName());
         }
 
+        StringBuilder byline = new StringBuilder();
+        if (comic.getIssueNumber() != 0) {
+            byline.append("Issue #").append(comic.getIssueNumber());
+        }
+        if (comic.getCoverDate() != null) {
+            if (byline.length() > 0) {
+                byline.append(" | ");
+            }
+            byline.append(comic.getCoverDate());
+        }
+
         return new Artwork.Builder()
                 .title(name.toString())
-                .byline("Data provided by © ComicVine.")
+                .byline(byline.toString())
+                .attribution("Data provided by © ComicVine.")
                 .persistentUri(Uri.parse(comic.getImage().getSuperUrl()))
                 .token(String.valueOf(comic.getId()))
                 .webUri(Uri.parse(comic.getSiteDetailUrl()))
