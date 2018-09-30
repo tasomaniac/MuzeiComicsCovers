@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.jakewharton.hugo'
 apply plugin: 'com.github.triplet.play'
 apply plugin: 'io.fabric'
 
@@ -10,11 +9,9 @@ if (localPropertiesFile.exists()) {
 }
 
 def gitSha = 'git rev-parse --short HEAD'.execute([], project.rootDir).text.trim()
-def buildTime = new Date().format("yyyy-MM-dd'T'HH:mm'Z'", TimeZone.getTimeZone("UTC"))
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         applicationId "com.tasomaniac.muzei.comiccovers"
@@ -23,7 +20,6 @@ android {
         versionCode rootProject.ext.versionMajor * 10000 + rootProject.ext.versionMinor * 1000 + rootProject.ext.versionPatch * 100 + rootProject.ext.versionBuild
         versionName "${rootProject.ext.versionMajor}.${rootProject.ext.versionMinor}" + ((rootProject.ext.versionPatch != 0) ? ".${rootProject.ext.versionPatch}" : "")
         buildConfigField "String", "GIT_SHA", "\"${gitSha}\""
-        buildConfigField "String", "BUILD_TIME", "\"${buildTime}\""
 
         buildConfigField "String", "COMIC_VINE_CONSUMER_KEY", "\"" + (local_properties.comicvine_consumer_key ?: System.getenv("comicvine_consumer_key")) + "\""
 
@@ -31,10 +27,7 @@ android {
     }
 
     signingConfigs {
-        debug {
-            storeFile file("../distribution/debug.keystore")
-        }
-
+        debug.storeFile file("../distribution/debug.keystore")
         release {
             storeFile file("../distribution/" + (local_properties.release_keystore_name ?: "debug.keystore"))
             keyAlias(local_properties.release_keystore_alias ?: "androiddebugkey")
@@ -47,15 +40,13 @@ android {
         debug {
             ext.enableCrashlytics = false
             applicationIdSuffix ".debug"
-            signingConfig signingConfigs.debug
             versionNameSuffix "-debug"
+            signingConfig signingConfigs.debug
         }
 
         release {
             minifyEnabled true
-            zipAlignEnabled true
             shrinkResources true
-            debuggable false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
@@ -71,13 +62,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
-    }
-
-    dexOptions {
-        // Skip pre-dexing when running on Travis CI or when disabled via -Dpre-dex=false.
-        preDexLibraries = rootProject.ext.preDexEnabled && !rootProject.ext.isTravis
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -88,18 +74,14 @@ play {
 }
 
 dependencies {
-    compile 'com.squareup.okhttp:okhttp:2.5.0'
-    compile 'com.squareup.okio:okio:1.6.0'
-    compile 'com.squareup.retrofit:retrofit:1.9.0'
+    implementation 'com.squareup.okhttp:okhttp:2.5.0'
+    implementation 'com.squareup.retrofit:retrofit:1.9.0'
 
-    compile 'com.jakewharton.timber:timber:3.1.0'
+    implementation 'com.jakewharton.timber:timber:4.7.1'
 
-    compile 'com.google.android.apps.muzei:muzei-api:2.0'
+    implementation 'com.google.android.apps.muzei:muzei-api:2.0'
 
-    // Crashlytics Kit
-    compile('com.crashlytics.sdk.android:crashlytics:2.5.1@aar') {
-        transitive = true
-    }
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.5'
 
-    testCompile 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.12'
 }
