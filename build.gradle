@@ -3,7 +3,7 @@ buildscript {
 
     def versionMajor = 2
     def versionMinor = 0
-    def versionBuild = 0
+    def versionBuild = 1
 
     ext.versions = [
             compileSdk : 28,
@@ -20,7 +20,7 @@ buildscript {
         maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.0-alpha12'
+        classpath 'com.android.tools.build:gradle:3.3.0-alpha13'
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.20.0'
         classpath 'com.github.triplet.gradle:play-publisher:1.2.2'
         classpath 'com.novoda:gradle-android-command-plugin:2.0.1'
