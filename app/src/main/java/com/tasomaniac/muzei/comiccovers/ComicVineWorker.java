@@ -48,6 +48,8 @@ public class ComicVineWorker extends Worker {
                 return Result.FAILURE;
             }
 
+            prefs.edit().putString(COMIC_ID, String.valueOf(comic.getId())).apply();
+
             ProviderContract.Artwork.addArtwork(
                     getApplicationContext(),
                     BuildConfig.COMIC_VINE_AUTHORITY,
@@ -60,7 +62,7 @@ public class ComicVineWorker extends Worker {
     }
 
     private Comic getNextComic(final ComicVineService service) throws IOException {
-        String currentToken = prefs.getString(COMIC_ID, null);
+        String lastComicId = prefs.getString(COMIC_ID, null);
 
         String offset = String.valueOf(random.nextInt(max_size));
         ComicVineResponse response = service.getIssues(offset).execute().body();
@@ -74,12 +76,12 @@ public class ComicVineWorker extends Worker {
         prefs.edit().putInt(NUM_OF_TOTAL_RESULTS, max_size).apply();
 
         Comic comic = response.getResults().get(0);
-        String newToken = String.valueOf(comic.getId());
+        String newComicId = String.valueOf(comic.getId());
         boolean isContentValid = IOUtil.checkContentType(
                 getApplicationContext(),
                 comic.getImage().getSuperUrl()
         );
-        if (!newToken.equals(currentToken) && isContentValid) {
+        if (!newComicId.equals(lastComicId) && isContentValid) {
             return comic;
         } else {
             return getNextComic(service);
