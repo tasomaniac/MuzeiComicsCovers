@@ -78,6 +78,25 @@ android {
     }
 }
 
+staticAnalysis {
+    penalty {
+        maxWarnings = 10
+        maxErrors = 0
+    }
+
+    lintOptions {
+        textReport true
+        textOutput 'stdout'
+
+        checkAllWarnings true
+        checkReleaseBuilds false
+
+        lintConfig file('props/lint.xml')
+
+        includeVariants { it.name == 'debug' }
+    }
+}
+
 play {
     serviceAccountEmail = secrets['play_service_account'].or('').string
     pk12File = file(secrets['play_key_file'].or('no_file.p12').string)
@@ -94,7 +113,7 @@ dependencies {
 
     implementation 'com.jakewharton.timber:timber:4.7.1'
 
-    implementation 'com.google.android.apps.muzei:muzei-api:3.0.0-beta02'
+    implementation 'com.google.android.apps.muzei:muzei-api:3.0.0-beta03'
 
     implementation 'com.crashlytics.sdk.android:crashlytics:2.9.5'
 
