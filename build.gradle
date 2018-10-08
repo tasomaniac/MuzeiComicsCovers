@@ -40,7 +40,3 @@ allprojects {
     }
 
 }
-
-ext {
-    isTravis = "true".equals(System.getenv("TRAVIS"))
-}
