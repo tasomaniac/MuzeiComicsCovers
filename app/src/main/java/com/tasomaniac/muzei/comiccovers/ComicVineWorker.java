@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import androidx.work.Constraints;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
@@ -45,19 +45,19 @@ public class ComicVineWorker extends Worker {
             Comic comic = getNextComic(service);
 
             if (comic == null) {
-                return Result.FAILURE;
+                return Result.failure();
             }
 
             prefs.edit().putString(COMIC_ID, String.valueOf(comic.getId())).apply();
 
-            ProviderContract.Artwork.addArtwork(
+            ProviderContract.getProviderClient(
                     getApplicationContext(),
-                    BuildConfig.COMIC_VINE_AUTHORITY,
-                    toArtwork(comic));
-            return Result.SUCCESS;
+                    BuildConfig.COMIC_VINE_AUTHORITY)
+                    .addArtwork(toArtwork(comic));
+            return Result.success();
         } catch (IOException e) {
             Timber.e(e, "No internet connection");
-            return Result.RETRY;
+            return Result.retry();
         }
     }
 
