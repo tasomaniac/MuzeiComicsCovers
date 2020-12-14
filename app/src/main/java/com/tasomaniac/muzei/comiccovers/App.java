@@ -3,8 +3,9 @@ package com.tasomaniac.muzei.comiccovers;
 import android.app.Application;
 import android.content.Context;
 import android.util.Log;
-import com.crashlytics.android.Crashlytics;
-import io.fabric.sdk.android.Fabric;
+
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
+
 import okhttp3.OkHttpClient;
 import org.jetbrains.annotations.NotNull;
 import timber.log.Timber;
@@ -29,7 +30,6 @@ public class App extends Application {
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
         } else {
-            Fabric.with(this, new Crashlytics());
             Timber.plant(new CrashReportingTree());
         }
     }
@@ -42,7 +42,6 @@ public class App extends Application {
         return (App) context.getApplicationContext();
     }
 
-
     /**
      * A tree which logs important information for crash reporting.
      */
@@ -52,9 +51,10 @@ public class App extends Application {
                 return;
             }
 
-            Crashlytics.log(priority, tag, message);
+            FirebaseCrashlytics crashlytics = FirebaseCrashlytics.getInstance();
+            crashlytics.log(tag + message);
             if (t != null && priority >= Log.WARN) {
-                Crashlytics.logException(t);
+                crashlytics.recordException(t);
             }
         }
     }

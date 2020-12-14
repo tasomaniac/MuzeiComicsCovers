@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "754241439829",
+    "project_id": "muzeicomiccovers",
+    "storage_bucket": "muzeicomiccovers.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:754241439829:android:afc516415c28a03c88acdc",
+        "android_client_info": {
+          "package_name": "com.tasomaniac.muzei.comiccovers"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "754241439829-ur8p3cj886besg45cp7lobp409kgh4e6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCAX7SLYcu5mkq8h7ofzc6F3AmOPTqxfE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "754241439829-ur8p3cj886besg45cp7lobp409kgh4e6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:754241439829:android:f2d236e91032a6c788acdc",
+        "android_client_info": {
+          "package_name": "com.tasomaniac.muzei.comiccovers.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "754241439829-ur8p3cj886besg45cp7lobp409kgh4e6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCAX7SLYcu5mkq8h7ofzc6F3AmOPTqxfE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "754241439829-ur8p3cj886besg45cp7lobp409kgh4e6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

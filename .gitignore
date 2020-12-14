@@ -5,7 +5,7 @@ build
 /captures
 
 my-release-key.keystore
-tasomaniac.p12
+play-service-account.json
 release.signing
 secrets.properties
 

@@ -1,9 +1,8 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.github.triplet.play'
-apply plugin: 'io.fabric'
-apply plugin: 'com.novoda.android-command'
 apply plugin: 'com.novoda.build-properties'
-apply plugin: 'com.novoda.static-analysis'
+apply plugin: 'com.gradleup.static-analysis'
+apply from: configFile('configure-crashlytics.gradle')
+apply from: configFile('play-publish.gradle')
 
 buildProperties {
     signing.using(file('props/release.signing')) | file('props/debug.signing')
@@ -11,7 +10,6 @@ buildProperties {
 }
 
 def secrets = buildProperties.secrets
-def gitSha = 'git rev-parse --short HEAD'.execute([], project.rootDir).text.trim()
 
 android {
     compileSdkVersion versions.compileSdk
@@ -22,7 +20,6 @@ android {
         targetSdkVersion versions.compileSdk
         versionCode versions.versionCode
         versionName versions.versionName
-        buildConfigString "GIT_SHA", gitSha
 
         buildConfigString "COMIC_VINE_CONSUMER_KEY", secrets['comicvine_consumer_key'] | ""
         buildConfigString "COMIC_VINE_AUTHORITY", applicationId
@@ -44,7 +41,6 @@ android {
 
     buildTypes {
         debug {
-            ext.enableCrashlytics = false
             applicationIdSuffix ".debug"
             versionNameSuffix "-debug"
             signingConfig signingConfigs.debug
@@ -56,15 +52,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
-    }
-
-    lintOptions {
-        abortOnError true
-        textReport true
-        textOutput 'stdout'
-
-        fatal 'UnusedResources'
-        warning 'InvalidPackage'
     }
 
     compileOptions {
@@ -86,23 +73,17 @@ staticAnalysis {
         checkAllWarnings true
         checkReleaseBuilds false
 
-        lintConfig file('props/lint.xml')
+        lintConfig configFile('lint.xml')
 
         includeVariants { it.name == 'debug' }
     }
 }
 
-play {
-    serviceAccountEmail = secrets['play_service_account'].or('').string
-    pk12File = file(secrets['play_key_file'].or('no_file.p12').string)
-    track = 'alpha'
-}
-
 dependencies {
-    implementation 'com.squareup.okhttp3:okhttp:3.11.0'
-    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
-    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'com.google.code.gson:gson:2.8.6'
 
     implementation 'androidx.work:work-runtime:2.4.0'
 
@@ -110,7 +91,5 @@ dependencies {
 
     implementation 'com.google.android.apps.muzei:muzei-api:3.4.0'
 
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.5'
-
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13.1'
 }
