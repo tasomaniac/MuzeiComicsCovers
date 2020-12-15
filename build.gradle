@@ -5,8 +5,8 @@ buildscript {
     }
 
     def versionMajor = 2
-    def versionMinor = 0
-    def versionBuild = 4
+    def versionMinor = 1
+    def versionBuild = 0
     ext.playPublishTrack = 'alpha'
 
     ext.versions = [
